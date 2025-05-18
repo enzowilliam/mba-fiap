@@ -1,0 +1,13 @@
+# ambiente virtual
+venv/
+
+# cache de Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# variáveis de ambiente
+.env
+
+# arquivos de sistema
+.DS_Store
