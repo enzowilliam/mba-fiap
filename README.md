@@ -4,7 +4,7 @@
 ## 📊 Visão Geral dos Dados
 
 ### Dataset
-- **Fonte: https://www.kaggle.com/datasets/mirichoi0218/insurance?resource=download
+- **Fonte**: https://www.kaggle.com/datasets/mirichoi0218/insurance?resource=download
 - **Total de registros**: 1.338 observações
 - **Variáveis**: 7 colunas (6 preditoras + 1 variável alvo)
 - **Dados ausentes**: Nenhum valor faltante detectado
@@ -133,7 +133,3 @@ Este modelo de regressão linear múltipla demonstra que:
 2. **Idade, BMI e número de filhos** são preditores secundários importantes
 3. **Sexo e região geográfica** não influenciam significativamente os custos
 4. **O modelo explaining 74.2% da variabilidade** nos custos, indicando boa performance
-
----
-
-*Análise realizada em 03 de junho de 2025*
