@@ -1,123 +1,139 @@
-base de dados insurance.csv retirada de: https://www.kaggle.com/datasets/mirichoi0218/insurance?resource=download
-
-=== 1. EXPLORAÇÃO INICIAL DOS DADOS ===
-
-Primeiras 5 linhas do DataFrame:
-   age     sex     bmi  children smoker     region      charges
-0   19  female  27.900         0    yes  southwest  16884.92400
-1   18    male  33.770         1     no  southeast   1725.55230
-2   28    male  33.000         3     no  southeast   4449.46200
-3   33    male  22.705         0     no  northwest  21984.47061
-4   32    male  28.880         0     no  northwest   3866.85520 
-
-Número de linhas: 1338, Número de colunas: 7
-
-Tipos de cada coluna:
-age           int64
-sex          object
-bmi         float64
-children      int64
-smoker       object
-region       object
-charges     float64
-dtype: object 
-
-Estatísticas descritivas das colunas numéricas:
-               age          bmi     children       charges
-count  1338.000000  1338.000000  1338.000000   1338.000000
-mean     39.207025    30.663397     1.094918  13270.422265
-std      14.049960     6.098187     1.205493  12110.011237
-min      18.000000    15.960000     0.000000   1121.873900
-25%      27.000000    26.296250     0.000000   4740.287150
-50%      39.000000    30.400000     1.000000   9382.033000
-75%      51.000000    34.693750     2.000000  16639.912515
-max      64.000000    53.130000     5.000000  63770.428010 
-
-Contagem de valores ausentes por coluna:
-age         0
-sex         0
-bmi         0
-children    0
-smoker      0
-region      0
-charges     0
-dtype: int64 
+# Análise de Seguros de Saúde - Modelo de Regressão Linear
 
 
-=== 2. VISUALIZAÇÕES INICIAIS ===
+## 📊 Visão Geral dos Dados
 
-2025-06-03 21:25:13.944 Python[7918:14822449] +[IMKClient subclass]: chose IMKClient_Modern
-2025-06-03 21:25:13.945 Python[7918:14822449] +[IMKInputSession subclass]: chose IMKInputSession_Modern
+### Dataset
+- **Fonte: https://www.kaggle.com/datasets/mirichoi0218/insurance?resource=download
+- **Total de registros**: 1.338 observações
+- **Variáveis**: 7 colunas (6 preditoras + 1 variável alvo)
+- **Dados ausentes**: Nenhum valor faltante detectado
 
-=== 3. PRÉ-PROCESSAMENTO DE DADOS ===
+### Variáveis do Dataset
+| Variável | Tipo | Descrição |
+|----------|------|-----------|
+| `age` | Numérica | Idade do segurado |
+| `sex` | Categórica | Sexo (male/female) |
+| `bmi` | Numérica | Índice de Massa Corporal |
+| `children` | Numérica | Número de filhos dependentes |
+| `smoker` | Categórica | Status de fumante (yes/no) |
+| `region` | Categórica | Região geográfica (northwest, southeast, southwest, northeast) |
+| `charges` | Numérica | **Variável alvo** - Custos do seguro de saúde |
 
-Linhas originais: 1338 | Linhas após dropna(): 1338
+## 📈 Estatísticas Descritivas
 
-Colunas após One-Hot Encoding:
-['age', 'bmi', 'children', 'charges', 'sex_male', 'smoker_yes', 'region_northwest', 'region_southeast', 'region_southwest'] 
+### Variáveis Numéricas
+| Estatística | Idade | BMI | Filhos | Custos (USD) |
+|-------------|--------|-----|--------|--------------|
+| **Média** | 39.2 anos | 30.7 | 1.1 | $13,270.42 |
+| **Mediana** | 39.0 anos | 30.4 | 1.0 | $9,382.03 |
+| **Desvio Padrão** | 14.0 anos | 6.1 | 1.2 | $12,110.01 |
+| **Mínimo** | 18 anos | 16.0 | 0 | $1,121.87 |
+| **Máximo** | 64 anos | 53.1 | 5 | $63,770.43 |
 
+## 🔧 Pré-processamento
 
-=== 4. DIVISÃO EM TREINO E TESTE ===
+### Transformações Realizadas
+1. **Codificação One-Hot** para variáveis categóricas
+2. **Divisão dos dados**: 80% treino (1.070 obs.) / 20% teste (268 obs.)
+3. **Análise de multicolinearidade** usando Variance Inflation Factor (VIF)
 
-Dados de Treino: 1070 linhas
-Dados de Teste: 268 linhas
+### Variáveis Finais do Modelo
+- `age` - Idade
+- `bmi` - Índice de Massa Corporal
+- `children` - Número de filhos
+- `sex_male` - Sexo masculino (dummy)
+- `smoker_yes` - Fumante (dummy)
+- `region_northwest` - Região noroeste (dummy)
+- `region_southeast` - Região sudeste (dummy)
+- `region_southwest` - Região sudoeste (dummy)
 
+## 📊 Análise de Multicolinearidade (VIF)
 
-=== 5. CÁLCULO DE VIF (MULTICOLINEARIDADE) ===
+| Variável | VIF |
+|----------|-----|
+| age | 1.02 |
+| bmi | 1.09 |
+| children | 1.01 |
+| sex_male | 1.01 |
+| smoker_yes | 1.01 |
+| region_northwest | 1.49 |
+| region_southeast | 1.61 |
+| region_southwest | 1.52 |
 
-           variável        VIF
-0             const  35.353322
-1               age   1.023084
-2               bmi   1.094986
-3          children   1.005643
-4          sex_male   1.006303
-5        smoker_yes   1.011703
-6  region_northwest   1.493159
-7  region_southeast   1.613285
-8  region_southwest   1.515246 
+> **Nota**: Todos os valores de VIF estão abaixo de 5, indicando ausência de multicolinearidade significativa.
 
+## 🎯 Resultados do Modelo
 
-=== 6. TREINAMENTO DO MODELO (OLS) ===
+### Performance Geral
+- **R² (Coeficiente de Determinação)**: 0.742
+- **R² Ajustado**: 0.740
+- **F-statistic**: 380.9 (p < 0.001)
 
-                            OLS Regression Results                            
-==============================================================================
-Dep. Variable:                charges   R-squared:                       0.742
-Model:                            OLS   Adj. R-squared:                  0.740
-Method:                 Least Squares   F-statistic:                     380.9
-Date:                Tue, 03 Jun 2025   Prob (F-statistic):          1.32e-305
-Time:                        21:25:47   Log-Likelihood:                -10845.
-No. Observations:                1070   AIC:                         2.171e+04
-Df Residuals:                    1061   BIC:                         2.175e+04
-Df Model:                           8                                         
-Covariance Type:            nonrobust                                         
-====================================================================================
-                       coef    std err          t      P>|t|      [0.025      0.975]
-------------------------------------------------------------------------------------
-const            -1.193e+04   1114.505    -10.705      0.000   -1.41e+04   -9744.335
-age                256.9757     13.477     19.067      0.000     230.530     283.421
-bmi                337.0926     32.471     10.381      0.000     273.378     400.807
-children           425.2788    154.655      2.750      0.006     121.814     728.743
-sex_male           -18.5917    376.175     -0.049      0.961    -756.722     719.539
-smoker_yes        2.365e+04    466.505     50.699      0.000    2.27e+04    2.46e+04
-region_northwest  -370.6773    536.873     -0.690      0.490   -1424.130     682.776
-region_southeast  -657.8643    539.791     -1.219      0.223   -1717.043     401.314
-region_southwest  -809.7994    535.208     -1.513      0.131   -1859.986     240.387
-==============================================================================
-Omnibus:                      252.330   Durbin-Watson:                   2.085
-Prob(Omnibus):                  0.000   Jarque-Bera (JB):              613.798
-Skew:                           1.253   Prob(JB):                    5.19e-134
-Kurtosis:                       5.737   Cond. No.                         310.
-==============================================================================
+### Coeficientes Significativos
 
-Notes:
-[1] Standard Errors assume that the covariance matrix of the errors is correctly specified. 
+| Variável | Coeficiente | p-valor | Interpretação |
+|----------|-------------|---------|---------------|
+| **age** | +$256.98 | < 0.001 | Cada ano adicional aumenta o custo em ~$257 |
+| **bmi** | +$337.09 | < 0.001 | Cada ponto de BMI adicional aumenta o custo em ~$337 |
+| **children** | +$425.28 | 0.006 | Cada filho adicional aumenta o custo em ~$425 |
+| **smoker_yes** | +$23,650 | < 0.001 | **Fumantes pagam ~$23,650 a mais** |
 
+### Variáveis Não Significativas
+- **sex_male**: Não há diferença significativa entre sexos (p = 0.961)
+- **Regiões**: Nenhuma região apresentou diferença significativa nos custos
 
-=== 7. AVALIAÇÃO DO MODELO NO CONJUNTO DE TESTE ===
+## 📏 Avaliação no Conjunto de Teste
 
-RMSE: 5796.28
-MAE: 4181.19
-R²: 0.7836
+### Métricas de Performance
+- **RMSE (Root Mean Square Error)**: $5,796.28
+- **MAE (Mean Absolute Error)**: $4,181.19
+- **R² no teste**: 0.7836
 
+## 🔍 Principais Insights
 
-=== PROCESSO CONCLUÍDO COM SUCESSO ===
+### 1. **Impacto do Tabagismo** 🚬
+- Fumantes pagam aproximadamente **$23,650 a mais** em seguros
+- Esta é, de longe, a variável mais impactante no modelo
+
+### 2. **Fatores Demográficos** 👥
+- **Idade**: Cada ano adicional representa +$257 no custo
+- **BMI**: Obesidade tem impacto significativo (+$337 por ponto)
+- **Filhos**: Cada dependente adicional custa +$425
+
+### 3. **Fatores Sem Impacto Significativo** ❌
+- **Sexo**: Não influencia significativamente os custos
+- **Região geográfica**: Sem diferenças estatisticamente significativas
+
+## 📋 Qualidade do Modelo
+
+### Pontos Fortes
+- ✅ **Alta capacidade explicativa**: R² = 74.2%
+- ✅ **Baixa multicolinearidade**: Todos VIF < 2
+- ✅ **Boa generalização**: R² teste (78.4%) > R² treino (74.2%)
+- ✅ **Variáveis estatisticamente significativas**
+
+### Considerações
+- 📊 **Distribuição residual**: Indica possível não-normalidade (Jarque-Bera significativo)
+- 🎯 **Erro médio**: RMSE de ~$5,796 é razoável considerando a faixa de valores
+
+## 🛠️ Tecnologias Utilizadas
+
+- **Python** - Linguagem principal
+- **Pandas** - Manipulação de dados
+- **Statsmodels** - Modelagem estatística (OLS)
+- **Scikit-learn** - Divisão de dados e métricas
+- **Matplotlib/Seaborn** - Visualizações
+
+## 📝 Conclusões
+
+Este modelo de regressão linear múltipla demonstra que:
+
+1. **O tabagismo é o fator mais crítico** para determinar custos de seguro de saúde
+2. **Idade, BMI e número de filhos** são preditores secundários importantes
+3. **Sexo e região geográfica** não influenciam significativamente os custos
+4. **O modelo explaining 74.2% da variabilidade** nos custos, indicando boa performance
+
+---
+
+*Análise realizada em 03 de junho de 2025*
